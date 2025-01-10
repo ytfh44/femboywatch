@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Flask App</title>
+    <!-- React Scripts -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" onerror="scriptLoadError('React')"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" onerror="scriptLoadError('ReactDOM')"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js" onerror="scriptLoadError('Babel')"></script>
+    <style>
+        #error-container {
+            color: red;
+            background-color: #ffeeee;
+            padding: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <div id="error-container"></div>
+
+    <script>
+        function scriptLoadError(scriptName) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.style.display = 'block';
+            errorContainer.innerHTML = `Error: Failed to load ${scriptName} script. Please check your internet connection.`;
+        }
+    </script>
+
+    <script type="text/babel">
+        function App() {
+            console.log('React App rendering');
+            return (
+                <div>
+                    <h1>Welcome to React in Flask!</h1>
+                    <p>This is a basic React component integrated with Flask.</p>
+                </div>
+            );
+        }
+
+        try {
+            ReactDOM.render(<App />, document.getElementById('root'));
+        } catch (error) {
+            console.error('React rendering error:', error);
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.style.display = 'block';
+            errorContainer.innerHTML = `React Rendering Error: ${error.message}`;
+        }
+    </script>
+</body>
+</html>
