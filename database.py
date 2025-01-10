@@ -2,6 +2,8 @@ import os
 import sys
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+from sqlalchemy import JSON
+from datetime import date
 
 # 设置控制台编码为UTF-8
 sys.stdout.reconfigure(encoding='utf-8')
@@ -22,6 +24,18 @@ class Project(db.Model):
     research_team = db.Column(db.Text, nullable=True)
     funding_source = db.Column(db.Integer, nullable=True)  # 男娘数量
     cuteness = db.Column(db.Integer, nullable=True)  # 可爱度
+
+    # 新增持久化字段
+    femboy_characters = db.Column(JSON, nullable=True)  # 存储男娘角色详情
+    game_tags = db.Column(db.Text, nullable=True)  # 游戏标签
+    release_date = db.Column(db.Date, nullable=True)  # 发行日期
+    developer = db.Column(db.String(200), nullable=True)  # 开发商
+    platforms = db.Column(db.Text, nullable=True)  # 支持平台
+    age_rating = db.Column(db.String(50), nullable=True)  # 年龄分级
+    price = db.Column(db.Float, nullable=True)  # 价格
+    discount = db.Column(db.Float, nullable=True)  # 折扣
+    
+    # 时间戳
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
@@ -36,7 +50,15 @@ class Project(db.Model):
                 'keyPoints': self.keywords.split(',') if self.keywords else [],
                 'researchTeam': self.research_team.split(',') if self.research_team else [],
                 'femboyCount': self.funding_source,
-                'cuteness': self.cuteness
+                'cuteness': self.cuteness,
+                'femboyCharacters': self.femboy_characters or [],
+                'gameTags': self.game_tags.split(',') if self.game_tags else [],
+                'releaseDate': str(self.release_date) if self.release_date else None,
+                'developer': self.developer,
+                'platforms': self.platforms.split(',') if self.platforms else [],
+                'ageRating': self.age_rating,
+                'price': self.price,
+                'discount': self.discount
             }
         }
 
@@ -56,43 +78,61 @@ def seed_initial_data(app):
     """
     填充初始数据
     """
-    # 检查是否已有数据
-    if Project.query.count() == 0:
-        initial_projects = [
-            Project(
-                title='原神',
-                category='开放世界',
-                description='提瓦特大陆的男娘冒险',
-                full_description='在提瓦特大陆的冒险中，玩家可以遇到温迪、行秋等多位可爱的男娘角色。每个角色都有独特的性格和故事，让人不禁想要收集更多。',
-                keywords='温迪,行秋,重云,赛诺',
-                research_team='米哈游,原神制作组',
-                funding_source=4,  # 男娘数量
-                cuteness=95  # 可爱度
-            ),
-            Project(
-                title='崩坏：星穹铁道',
-                category='回合策略',
-                description='星穹列车上的男娘冒险',
-                full_description='在开拓星穹铁道的旅程中，丹恒、阿兰等男娘角色陪伴玩家探索未知。每个角色都设计精美，性格鲜明。',
-                keywords='丹恒,阿兰,黄泉',
-                research_team='米哈游,星穹铁道制作组',
-                funding_source=3,  # 男娘数量
-                cuteness=90  # 可爱度
-            ),
-            Project(
-                title='明日方舟',
-                category='塔防',
-                description='罗德岛的男娘干员们',
-                full_description='在感染者与非感染者的故事中，安赛尔、巫恋等男娘干员们活跃在第一线。他们不仅战斗力出众，更是可爱到让人忍不住想要护住。',
-                keywords='安赛尔,巫恋,菲亚梅塔',
-                research_team='鹰角网络,方舟制作组',
-                funding_source=5,  # 男娘数量
-                cuteness=88  # 可爱度
-            )
-        ]
-        
-        db.session.add_all(initial_projects)
-        db.session.commit()
-        print("初始数据已成功写入数据库")
-    else:
-        print("数据库已包含数据，跳过初始化")
+    with app.app_context():
+        # 检查是否已有数据
+        if Project.query.count() == 0:
+            initial_projects = [
+                Project(
+                    title='可爱男娘RPG',
+                    category='角色扮演',
+                    description='一款以男娘为主角的奇幻RPG游戏',
+                    full_description='探索一个充满魔法和冒险的世界，扮演独特的男娘角色，体验非凡的旅程。',
+                    keywords='男娘,RPG,奇幻,冒险',
+                    research_team='YTF工作室',
+                    funding_source=10,
+                    cuteness=9,
+                    femboy_characters=[
+                        {
+                            'name': '小樱',
+                            'age': 18,
+                            'description': '可爱的男娘法师',
+                            'abilities': ['魔法', '治疗']
+                        }
+                    ],
+                    game_tags='奇幻,RPG,男娘',
+                    release_date=date(2024, 6, 15),
+                    developer='YTF工作室',
+                    platforms='PC,Switch',
+                    age_rating='15+',
+                    price=39.99,
+                    discount=0.2
+                ),
+                Project(
+                    title='男娘恋爱模拟器',
+                    category='恋爱模拟',
+                    description='一款充满爱意的男娘恋爱游戏',
+                    full_description='在这个温馨的恋爱世界中，与可爱的男娘角色建立深厚的感情。',
+                    keywords='男娘,恋爱,模拟',
+                    research_team='萌系工作室',
+                    funding_source=15,
+                    cuteness=10,
+                    femboy_characters=[
+                        {
+                            'name': '小樱花',
+                            'age': 19,
+                            'description': '害羞的男娘学生',
+                            'abilities': ['甜美', '温柔']
+                        }
+                    ],
+                    game_tags='恋爱,模拟,治愈',
+                    release_date=date(2024, 8, 20),
+                    developer='萌系工作室',
+                    platforms='PC,PS4',
+                    age_rating='18+',
+                    price=49.99,
+                    discount=0.1
+                )
+            ]
+            
+            db.session.add_all(initial_projects)
+            db.session.commit()
